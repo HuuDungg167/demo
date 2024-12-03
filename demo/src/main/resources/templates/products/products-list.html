@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security5"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title th:text="${title} ?: 'Products List'">Products List</title>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        .product-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        .product-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 1px solid #dee2e6;
+            border-radius: 0.25rem;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            text-align: center;
+            flex: 0 0 30%;
+            box-sizing: border-box;
+            height: 450px; /* Ensure all cards have the same height */
+        }
+        .product-card img {
+            width: 150px; /* Fixed width for all images */
+            height: auto; /* Maintain aspect ratio */
+            object-fit: cover; /* Ensure the image covers the area */
+        }
+        .product-info {
+            margin-top: 1rem;
+            flex-grow: 1;
+        }
+        .product-info div {
+            margin-bottom: 0.5rem;
+        }
+        .actions, .add-to-cart {
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+<section layout:fragment="content">
+
+
+
+    <h1>Products List</h1>
+    <div class="container">
+        <div class="product-list">
+            <div class="product-card" th:each="product : ${products}">
+                <img th:src="@{/images/{imageName}(imageName=${product.thumnail})}" alt="Product Image">
+                <div class="product-info">
+
+                    <div>Name: <span th:text="${product.name}"></span></div>
+                    <div>Price: <span th:text="${product.price}"></span></div>
+                    <div>Description: <span th:text="${product.description}"></span></div>
+                    <div>Category: <span th:text="${product.category.name}"></span></div>
+                </div>
+
+                <div class="details">
+                    <a th:href="@{/products/details/{id}(id=${product.id})}" class="btn btn-info btn-sm">Chi tiết</a>
+                </div>
+
+                <div class="actions" sec:authorize="hasAuthority('ADMIN')">
+                    <a th:href="@{/products/edit/{id}(id=${product.id})}" class="btn btn-success btn-sm">Sửa</a>
+                    <a th:href="@{/products/delete/{id}(id=${product.id})}" class="btn btn-danger btn-sm" onclick="return confirm('Bạn có chắc không?')">Xóa</a>
+                </div>
+
+                <div class="add-to-cart">
+                    <form th:action="@{/cart/add}" method="post" sec:authorize="isAuthenticated()">
+                        <input type="number" name="quantity" min="1" value="1" class="form-control d-inline-block" style="width: 70px;">
+                        <input type="hidden" th:value="${product.id}" name="productId"/>
+                        <button type="submit" class="btn btn-warning btn-sm">Thêm Vào Giỏ</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+    <!-- Kiểm tra xem đã thực hiện tìm kiếm và URL chứa productName hay không -->
+    <div th:if="${searchPerformed}">
+        <!-- Nút trở về danh sách sản phẩm khi có kết quả tìm kiếm -->
+        <a th:href="@{/products}" class="btn btn-secondary">Back to Products List</a>
+
+
+    </div>
+</section>
+</body>
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security5"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <title>Layout</title>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background-image: url('/images/nen3.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            backdrop-filter: blur(10px); /* Hiệu ứng làm mờ nền */
+            padding-bottom: 100px; /* Thêm padding dưới cho phần chính của trang */
+            margin-bottom: 50px;
+        }
+        .product-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 1px solid #000000;
+            border-radius: 1rem;
+            margin-bottom: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+            flex: 0 0 30%;
+            box-sizing: border-box;
+            height: 450px;
+            background-color: #ffffff96;
+        }
+        .navbar {
+            background-color: rgb(0, 0, 0); /* Màu đen */
+        }
+        .navbar .navbar-brand,
+        .navbar .navbar-nav .nav-link {
+            color: #ffffff; /* Màu chữ trắng */
+        }
+        button, input, optgroup, select, textarea {
+            font-family: inherit;
+            font-size: larger;
+            line-height: revert-layer;
+            border-radius: 0.5rem;
+        }
+        .btn:hover {
+            color: var(--bs-btn-hover-color);
+            background-color: #9efbe9;
+            border-color: #fbfdff;
+        }
+        .btn-icon {
+            background-color: transparent; /* Loại bỏ nền màu của nút */
+            border: none; /* Loại bỏ viền của nút nếu có */
+            padding: 0; /* Xóa padding mặc định của nút */
+        }
+        .btn-primary.btn-icon {
+            background-color: #cccccc; /* Đổi màu nền thành màu xám */
+            border-color: #cccccc; /* Đổi màu viền thành màu xám */
+            color: #ffffff; /* Đổi màu chữ thành màu trắng */
+        }
+        .btn-primary.btn-icon:hover,
+        .btn-primary.btn-icon:focus {
+            background-color: #999999; /* Đổi màu nền khi hover hoặc focus */
+            border-color: #999999; /* Đổi màu viền khi hover hoặc focus */
+        }
+        .btn-primary.btn-icon:active {
+            background-color: #666666; /* Đổi màu nền khi click */
+            border-color: #666666; /* Đổi màu viền khi click */
+        }
+        .btn-icon i {
+            font-size: 1.2rem; /* Điều chỉnh kích thước của biểu tượng */
+        }
+        .btn-primary.btn-icon:focus {
+            box-shadow: none; /* Loại bỏ shadow khi focus */
+        }
+        .nav-link .bi-cart {
+            font-size: 1.5rem; /* Điều chỉnh kích thước của biểu tượng giỏ hàng */
+            margin-top: 5px; /* Điều chỉnh khoảng cách từ biểu tượng giỏ hàng đến đường kẻ ngang trên */
+        }
+        .navbar-form {
+            margin-top: 8px; /* Điều chỉnh khoảng cách từ thanh tìm kiếm đến các phần tử khác trong Navbar */
+        }
+        .btn-primary {
+            --bs-btn-color: #fff;
+            --bs-btn-bg: #35383d;
+            --bs-btn-border-color: #000000;
+            --bs-btn-hover-color: #fff;
+            --bs-btn-hover-bg: #36815f;
+        }
+        /* Footer styles */
+        footer {
+            background-color: #000000; /* Màu đen */
+            color: #ffffff; /* Màu chữ trắng */
+            padding: 20px 0;
+            text-align: center;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<div class="background"></div>
+<div class="overlay"></div>
+<nav class="navbar navbar-expand-lg navbar-light">
+    <div class="container-fluid">
+        <a class="navbar-brand text-white" href="/products">Con Gà Con</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link text-white active" aria-current="page"
+                       href="/products">Sản Phẩm</a>
+                </li>
+                <li class="nav-item" sec:authorize="hasAnyAuthority('ADMIN')">
+                    <a th:href="@{/products/add}" class="nav-link text-white">Thêm Sản Phẩm</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white active" aria-current="page"
+                       href="/categories">Danh Mục</a>
+                </li>
+                <li class="nav-item" sec:authorize="hasAnyAuthority('ADMIN')">
+                    <a th:href="@{/categories/add}" class="nav-link text-white">Thêm Danh Mục</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav ms-auto">
+                <form action="#" th:action="@{/products/search}" method="get" class="d-flex">
+                    <input class="form-control me-2 form-control-sm" type="search" name="productName" placeholder="Tìm Kiếm" aria-label="Search">
+                    <button class="btn btn-secondary btn-sm" type="submit">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </form>
+                <li class="nav-item">
+                    <a class="nav-link" href="/cart">
+                        <i class="bi bi-cart"></i> Giỏ hàng
+                    </a>
+                </li>
+            </ul>
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <a class="nav-link text-white" href="/user-info">Hi, <span sec:authentication="name"></span></a>
+                </li>
+
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <form th:action="@{/logout}" method="post">
+                        <button class="btn btn-outline-light" type="submit"><i class="bi bi-box-arrow-in-right"></i></button>
+                    </form>
+                </li>
+                <li class="nav-item" sec:authorize="!isAuthenticated()">
+                    <a class="btn btn-outline-light" href="/login">Đăng Nhập</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="container mt-5 content">
+    <section layout:fragment="content">
+        <!-- Nội dung cụ thể của từng trang sẽ được đặt tại đây -->
+    </section>
+</div>
+<!--<footer>-->
+<!--    <div class="container">-->
+<!--        <p>Con Gà Con Shop</p>-->
+<!--        <p>Địa chỉ: Số 123, Đường ABC, Thành phố XYZ</p>-->
+<!--        <p>Email: contact@cogaconshop.com | Điện thoại: 0123 456 789</p>-->
+<!--    </div>-->
+<!--</footer>-->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+</body>
+</html>
