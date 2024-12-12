@@ -15,8 +15,6 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Builder
-
-
 public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -66,7 +64,7 @@ public class Booking {
     }
 
     public enum Status {
-        PENDING, COMPLETED, CANCELLED, ACCEPTED, REJECTED
+        PENDING, COMPLETED, CANCELLED, CONFIRMED, FAILED, EXPIRED
     }
 }
 

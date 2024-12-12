@@ -2,6 +2,7 @@ package com.hutech.demo.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -22,6 +23,9 @@ public class Service {
 
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
+
+    @Column(name = "cost_per_day")
+    private BigDecimal costPerDay;
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;

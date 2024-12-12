@@ -14,4 +14,5 @@ public class CreateServiceRequest {
     private String name;
 
     private String description;
+    private Integer amount;
 }

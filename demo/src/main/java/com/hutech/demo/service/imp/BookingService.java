@@ -13,9 +13,11 @@ import com.hutech.demo.repository.HelperRepository;
 import com.hutech.demo.repository.ServiceRepository;
 import com.hutech.demo.response.BookingResponse;
 import com.hutech.demo.service.inf.IBookingService;
+import org.apache.coyote.BadRequestException;
 
+import java.math.BigDecimal;
+import java.time.Duration;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @org.springframework.stereotype.Service
@@ -26,44 +28,61 @@ public class BookingService implements IBookingService {
     private final ServiceRepository serviceRepository;
     private final HelperRepository helperRepository;
     private final BookingMapper bookingMapper;
+    private final PaymentService paymentService;
 
     public BookingService(BookingRepository bookingRepository,
                           CustomerRepository customerRepository,
                           ServiceRepository serviceRepository,
                           HelperRepository helperRepository,
-                          BookingMapper bookingMapper) {
+                          BookingMapper bookingMapper,
+                          PaymentService paymentService) {
         this.bookingRepository = bookingRepository;
         this.customerRepository = customerRepository;
         this.serviceRepository = serviceRepository;
         this.helperRepository = helperRepository;
         this.bookingMapper = bookingMapper;
+        this.paymentService = paymentService;
     }
 
     @Override
     public BookingResponse createBooking(CreateBookingRequest request) {
-        Customer customer = customerRepository.findById(request.getCustomerId())
-                .orElseThrow(() -> new IllegalArgumentException("Customer not found"));
-        Service service = serviceRepository.findById(request.getServiceId())
-                .orElseThrow(() -> new IllegalArgumentException("Service not found"));
-        Helper helper = helperRepository.findById(request.getHelperId())
-                .orElseThrow(() -> new IllegalArgumentException("Helper not found"));
+        try {
+            Customer customer = customerRepository.findById(request.getCustomerId())
+                    .orElseThrow(() -> new IllegalArgumentException("Customer not found"));
+            Service service = serviceRepository.findById(request.getServiceId())
+                    .orElseThrow(() -> new IllegalArgumentException("Service not found"));
+            Helper helper = helperRepository.findById(request.getHelperId())
+                    .orElseThrow(() -> new IllegalArgumentException("Helper not found"));
 
-        Booking booking = bookingMapper.toBooking(request);
-        booking.setService(service);
-        booking.setCustomer(customer);
-        booking.setHelper(helper);
-        booking.setStatus(Booking.Status.PENDING);
+            Booking booking = bookingMapper.toBooking(request);
+            if (request.getEndTime().isBefore(request.getStartTime()))
+                throw new BadRequestException("Invalid input time");
+            long daysBetween = Duration.between(request.getStartTime(), request.getEndTime()).toDays()+1;
 
-        bookingRepository.save(booking);
-        return bookingMapper.toResponse(booking);
+            // Calculate the total price
+            booking.setTotalAmount(service.getCostPerDay().multiply(BigDecimal.valueOf(daysBetween)));
+            booking.setService(service);
+            booking.setCustomer(customer);
+            booking.setHelper(helper);
+            booking.setStatus(Booking.Status.PENDING);
+
+            bookingRepository.save(booking);
+
+//        paymentService.createPayment()
+            return bookingMapper.toResponse(booking);
+        }
+        catch (Exception e) {
+            // Handle or log the exceptions
+            throw new RuntimeException("Error during booking creation", e);
+        }
     }
 
     @Override
-    public BookingResponse updateBookingStatus(Long id, String status) {
+    public BookingResponse updateBookingStatus(Long id, Booking.Status status) {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("This booking with \"" + id + "\" doesn't exist"));
 
-        booking.setStatus(Booking.Status.valueOf(status));
+        booking.setStatus(status);
         bookingRepository.save(booking);
 
         return bookingMapper.toResponse(booking);

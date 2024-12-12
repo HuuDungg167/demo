@@ -34,7 +34,7 @@ public class BookingController {
     }
 
     @PutMapping("/{id}/status")
-    public ResponseEntity<BookingResponse> updateBookingStatus(@PathVariable Long id, @RequestBody String status) {
+    public ResponseEntity<BookingResponse> updateBookingStatus(@PathVariable Long id, @RequestBody Booking.Status status) {
         BookingResponse updatedBooking = bookingService.updateBookingStatus(id, status);
         return updatedBooking != null ? ResponseEntity.ok(updatedBooking) : ResponseEntity.notFound().build();
     }

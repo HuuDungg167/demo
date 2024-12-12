@@ -48,7 +48,6 @@ public class UserController {
             return "users/register";
         }
         userService.save(user);
-        userService.setDefaultRole(user.getUsername());
         return "redirect:/login";
     }
 

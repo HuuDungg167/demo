@@ -14,9 +14,9 @@ import java.time.LocalDateTime;
 @Data
 public class BookingResponse {
     private Long id;
-
+    @JsonIgnore
     private CustomerResponse customer;
-
+    @JsonIgnore
     private HelperResponse helper;
 
     private ServiceResponse service;

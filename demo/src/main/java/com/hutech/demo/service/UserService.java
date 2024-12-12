@@ -2,7 +2,6 @@ package com.hutech.demo.service;
 
 import com.hutech.demo.Roles;
 import com.hutech.demo.model.User;
-import com.hutech.demo.repository.IRoleRepository;
 import com.hutech.demo.repository.IUserRepository;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +23,6 @@ import java.util.Optional;
 public class UserService implements UserDetailsService {
 
     private final IUserRepository userRepository;
-    private final IRoleRepository roleRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -48,15 +46,15 @@ public class UserService implements UserDetailsService {
         userRepository.save(user);
     }
 
-    public void setDefaultRole(String username) {
-        User user = userRepository.findByUsername(username);
-        if (user != null) {
-            user.getRoles().add(roleRepository.findRoleById(Roles.EMPLOYER.value));
-            userRepository.save(user);
-        } else {
-            throw new UsernameNotFoundException("User not found");
-        }
-    }
+//    public void setDefaultRole(String username) {
+//        User user = userRepository.findByUsername(username);
+//        if (user != null) {
+//            user.getRoles().add(roleRepository.findRoleById(Roles.EMPLOYER.value));
+//            userRepository.save(user);
+//        } else {
+//            throw new UsernameNotFoundException("User not found");
+//        }
+//    }
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -79,7 +77,6 @@ public class UserService implements UserDetailsService {
         existingUser.setUsername(user.getUsername());
         existingUser.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
         existingUser.setEmail(user.getEmail());
-        existingUser.setRoles(user.getRoles());
         return userRepository.save(existingUser);
     }
 
