@@ -1,5 +1,6 @@
 package com.hutech.demo.controller;
 
+import com.hutech.demo.createrequest.CreateUserRequest;
 import com.hutech.demo.model.User;
 import com.hutech.demo.service.UserService;
 import jakarta.validation.Valid;
@@ -18,7 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/")
 @RequiredArgsConstructor
 public class UserController {
@@ -62,6 +63,11 @@ public class UserController {
         User user = userService.findByUsername(currentUser.getUsername());
         model.addAttribute("user", user);
         return "users/user-info";
+    }
+    @PostMapping("/create")
+    public User createUser(CreateUserRequest request){
+        User user = userService.createUser(request);
+        return user;
     }
 
 }

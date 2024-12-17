@@ -1,7 +1,12 @@
 package com.hutech.demo.service;
 
+import com.google.firebase.remoteconfig.internal.TemplateResponse;
 import com.hutech.demo.Roles;
+import com.hutech.demo.createrequest.CreateUserRequest;
+import com.hutech.demo.mapper.UserMapper;
+import com.hutech.demo.model.Customer;
 import com.hutech.demo.model.User;
+import com.hutech.demo.repository.CustomerRepository;
 import com.hutech.demo.repository.IUserRepository;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +28,8 @@ import java.util.Optional;
 public class UserService implements UserDetailsService {
 
     private final IUserRepository userRepository;
+    private final UserMapper userMapper;
+    private final CustomerRepository customerRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -90,7 +97,15 @@ public class UserService implements UserDetailsService {
     public List<User> searchUsersByUsername(String username) {
         return userRepository.findByUsernameContainingIgnoreCase(username);
     }
-
+    public User createUser(CreateUserRequest request){
+        User user = userMapper.toUser(request);
+        userRepository.save(user);
+        Customer customer = new Customer();
+        customer.setUser(user);
+        customer.setAddress(user.getAddress());
+        customerRepository.save(customer);
+        return user;
+    }
     public User findByUsername(String username) {
         return userRepository.findByUsername(username);
     }
